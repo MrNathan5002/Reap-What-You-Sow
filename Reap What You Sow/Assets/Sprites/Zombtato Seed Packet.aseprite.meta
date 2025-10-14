@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 59a1da78af3c95a4b944217ef9f842ef
+guid: 34ff0ac224b977c4e880768cafacafab
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638960610765807006
+  platformSettingsDirtyTick: 638960610683973434
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -133,7 +133,7 @@ ScriptedImporter:
       y: 4
       width: 16
       height: 24
-    spriteID: f16a8628bcda9a942a64661fdac0d452
+    spriteID: 81a181ffa8c4ba74da479a53e243a59e
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -144,7 +144,7 @@ ScriptedImporter:
     uvTransform: {x: 4, y: 4}
   - name: Frame_1
     originalName: 
-    pivot: {x: 0.5, y: 0.6}
+    pivot: {x: 0.5, y: 0.6666667}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
@@ -152,8 +152,8 @@ ScriptedImporter:
       x: 4
       y: 36
       width: 10
-      height: 15
-    spriteID: dcba82b97845a1d458c6dc77cd72c342
+      height: 12
+    spriteID: eea704cc84a58db498f49cdd54609b83
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -166,12 +166,12 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 2665248977
+      value0: 146111051
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Frankencarrot Seed Packet
+    name: Zombtato Seed Packet
     layerFlags: 0
     layerType: 0
     blendMode: 0
@@ -184,16 +184,16 @@ ScriptedImporter:
         y: 4
         width: 16
         height: 24
-      spriteId: f16a8628bcda9a942a64661fdac0d452
+      spriteId: 81a181ffa8c4ba74da479a53e243a59e
     - name: Frame_1
       frameIndex: 1
       additiveSortOrder: 0
       cellRect:
         x: 11
-        y: 7
+        y: 8
         width: 10
-        height: 15
-      spriteId: dcba82b97845a1d458c6dc77cd72c342
+        height: 12
+      spriteId: eea704cc84a58db498f49cdd54609b83
     linkedCells: []
     parentIndex: -1
   platformSettings:
