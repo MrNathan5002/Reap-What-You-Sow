@@ -6,24 +6,19 @@ using UnityEngine;
 public class HandManager : MonoBehaviour
 {
     public GameObject cardPrefab;
-
     public Transform handTransform;
 
-    public float fanSpread = 0f;
-
-    public float cardSpacing = 8f;
-
-    public float verticalSpacing = 10f;
+    public float fanSpread = -6f;
+    public float cardSpacing = 12f;
+    public float verticalSpacing = 5f;
+    public float Handsize = 5f;
 
     public List<GameObject> cardsInHand = new List<GameObject>();
 
     void Start()
     {
-        AddCardToHand();
-        AddCardToHand();
-        AddCardToHand();
-        AddCardToHand();
-        AddCardToHand();
+        for (int i = 0; i < Handsize; i++)
+            AddCardToHand();
     }
 
     public void AddCardToHand()
