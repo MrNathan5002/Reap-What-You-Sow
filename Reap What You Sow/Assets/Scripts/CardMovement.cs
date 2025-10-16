@@ -2,32 +2,38 @@
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IEndDragHandler
 {
     private RectTransform rectTransform;      // present if UI
     private Canvas canvas;                    // present if UI
     private bool isUI;                        // UI mode vs world-sprite mode
 
-    private Vector2 originalLocalPointerPosition;  // UI drag start (canvas space)
-    private Vector2 originalPanelAnchoredPos;      // UI anchored start
-
-    private Vector3 originalWorldPointer;          // world drag start (world space)
-    private Vector3 originalWorldPos;              // world start pos
+    private Vector3 originalWorldPointer;     // world drag start (not used to move now)
+    private Vector3 originalWorldPos;         // world start pos (for restore)
 
     private Vector3 originalScale;
-    private int currentState = 0;
+    private int currentState = 0;             // 0 idle, 1 hover, 2 dragging
     private Quaternion originalRotation;
     private Vector3 originalLocalPos;
     private InputAction mousePointer;
-    private Camera cam;                        // main/event camera
+    private Camera cam;
 
+    [Header("Hover Look")]
     [SerializeField] private float selectScale = 1.1f;
-    [SerializeField] private Vector2 cardPlay;
-    [SerializeField] private Vector3 playPosition;
-    [SerializeField] private GameObject glowEffect;
-    [SerializeField] private GameObject playArrow;
+    [SerializeField] private float hoverYOffset = 2f;
+    [SerializeField] private float hoverZOffset = -0.5f; // negative pulls toward cam
 
-    private ArcRenderer arc; // ← the arc on this card only
+    [Header("Visuals")]
+    [SerializeField] private GameObject glowEffect;
+
+    [Header("Sorting Boost (world sprites)")]
+    [SerializeField] private int sortingOrderBoost = 100;
+
+    private ArcRenderer arc;                  // arc on this card only
+    private bool elevated;                    // are we currently elevated?
+    private int originalSiblingIndex = -1;    // UI ordering
+    private int originalSortingOrder = 0;     // SpriteRenderer ordering
+    private SpriteRenderer sr;                // cached if present
 
     void Awake()
     {
@@ -41,21 +47,21 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         originalLocalPos = transform.localPosition;
         originalRotation = transform.localRotation;
 
+        sr = GetComponent<SpriteRenderer>();
+        if (sr) originalSortingOrder = sr.sortingOrder;
+
         mousePointer = InputSystem.actions?.FindAction("Point");
         if (mousePointer != null && !mousePointer.enabled) mousePointer.Enable();
 
         if (glowEffect) glowEffect.SetActive(false);
-        if (playArrow) playArrow.SetActive(false);
-
-        // --- NEW: ensure the arc starts hidden ---
         arc?.Show(false);
     }
 
     void OnDisable()
     {
         if (mousePointer != null && mousePointer.enabled) mousePointer.Disable();
-        // --- NEW: hide arc if this object gets disabled mid-drag ---
         arc?.Show(false);
+        Elevate(false);
     }
 
     void Update()
@@ -67,11 +73,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
                 break;
             case 2:
                 HandleDragState();
-                if (Mouse.current == null || !Mouse.current.leftButton.IsPressed())
-                    TransitionToState0();
-                break;
-            case 3:
-                HandlePlayState();
+                // Fallback: if somehow mouse up isn't delivered, reset here
                 if (Mouse.current == null || !Mouse.current.leftButton.IsPressed())
                     TransitionToState0();
                 break;
@@ -85,10 +87,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         transform.localRotation = originalRotation;
         transform.localPosition = originalLocalPos;
         if (glowEffect) glowEffect.SetActive(false);
-        if (playArrow) playArrow.SetActive(false);
-
-        // --- NEW: hide arc when drag/play ends ---
         arc?.Show(false);
+        Elevate(false);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -98,6 +98,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
             originalLocalPos = transform.localPosition;
             originalRotation = transform.localRotation;
             originalScale = transform.localScale;
+
+            Elevate(true);          // raise and bring-to-front
             currentState = 1;
         }
     }
@@ -105,7 +107,10 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
     public void OnPointerExit(PointerEventData eventData)
     {
         if (currentState == 1)
+        {
+            Elevate(false);
             TransitionToState0();
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -114,95 +119,91 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 
         currentState = 2;
 
-        // --- NEW: show arc when dragging begins ---
+        // keep elevated; disable hover-only visuals; show arc
+        Elevate(true);
+        if (glowEffect) glowEffect.SetActive(false);
         arc?.Show(true);
 
-        if (isUI)
-        {
-            var canvasRect = canvas.GetComponent<RectTransform>();
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, eventData.position, eventData.pressEventCamera, out originalLocalPointerPosition))
-            {
-                originalPanelAnchoredPos = rectTransform.anchoredPosition;
-            }
-        }
-        else
-        {
-            // World-sprite mode: cache world pointer and start pos
-            Vector3 sp = eventData.position;
-            sp.z = Mathf.Abs(transform.position.z - cam.transform.position.z);
-            originalWorldPointer = cam.ScreenToWorldPoint(sp);
-            originalWorldPos = transform.position;
-        }
+        // cache (no movement now, but harmless to keep)
+        Vector3 sp = eventData.position;
+        sp.z = Mathf.Abs(transform.position.z - cam.transform.position.z);
+        originalWorldPointer = cam.ScreenToWorldPoint(sp);
+        originalWorldPos = transform.position;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)   // ← NEW: explicit end
+    {
+        if (currentState == 2)
+            TransitionToState0();
+    }
+
+    public void OnEndDrag(PointerEventData eventData)     // ← NEW: explicit end
+    {
+        if (currentState == 2)
+            TransitionToState0();
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         if (currentState != 2) return;
 
-        if (isUI)
-        {
-            var canvasRect = canvas.GetComponent<RectTransform>();
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, eventData.position, eventData.pressEventCamera, out var localPointer))
-            {
-                Vector2 delta = localPointer - originalLocalPointerPosition;
-                rectTransform.anchoredPosition = originalPanelAnchoredPos + delta;
-
-                if (transform.localPosition.y > cardPlay.y)
-                {
-                    currentState = 3;
-                    if (playArrow) playArrow.SetActive(true);
-                    transform.localPosition = playPosition;
-                    // keep arc visible while in play state (still holding mouse)
-                    arc?.Show(true);
-                }
-            }
-        }
-        else
-        {
-            // World-sprite dragging in world units
-            Vector3 sp = eventData.position;
-            sp.z = Mathf.Abs(transform.position.z - cam.transform.position.z);
-            Vector3 wp = cam.ScreenToWorldPoint(sp);
-
-            Vector3 delta = wp - originalWorldPointer;
-            transform.position = originalWorldPos + delta;
-
-            if (transform.localPosition.y > cardPlay.y)
-            {
-                currentState = 3;
-                if (playArrow) playArrow.SetActive(true);
-                transform.localPosition = playPosition;
-                // keep arc visible while in play state (still holding mouse)
-                arc?.Show(true);
-            }
-        }
+        // DO NOT move during drag; card stays at elevated hover pos.
+        // ArcRenderer handles the cursor line independently.
     }
 
     private void HandleHoverState()
     {
         if (glowEffect && !glowEffect.activeSelf) glowEffect.SetActive(true);
         transform.localScale = originalScale * selectScale;
+        Elevate(true); // safe if already elevated
     }
 
     private void HandleDragState()
     {
+        // Keep orientation stable; keep arc visible.
         transform.localRotation = Quaternion.identity;
-        // ensure arc remains on during drag (in case anything toggled it)
         arc?.Show(true);
+        // No position changes here: card stays where hover placed it.
     }
 
-    private void HandlePlayState()
+    // ---------------- Elevation helper ----------------
+    private void Elevate(bool on)
     {
-        transform.localPosition = playPosition;
-        transform.localRotation = Quaternion.identity;
+        if (on == elevated) return;
 
-        var pointer = (mousePointer != null) ? mousePointer.ReadValue<Vector2>() : Vector2.zero;
-        if (pointer.y < cardPlay.y)
+        if (on)
         {
-            currentState = 2;
-            if (playArrow) playArrow.SetActive(false);
-            // still dragging → keep arc on
-            arc?.Show(true);
+            // Lift in Y and Z
+            var p = originalLocalPos;
+            p.y += hoverYOffset;
+            p.z += hoverZOffset;
+            transform.localPosition = p;
+
+            // Bring to front visually
+            if (isUI && rectTransform)
+            {
+                if (originalSiblingIndex < 0 && transform.parent != null)
+                    originalSiblingIndex = transform.GetSiblingIndex();
+                transform.SetAsLastSibling();
+            }
+            else if (sr)
+            {
+                originalSortingOrder = sr.sortingOrder;
+                sr.sortingOrder = originalSortingOrder + sortingOrderBoost;
+            }
         }
+        else
+        {
+            // Return to original position and ordering
+            transform.localPosition = originalLocalPos;
+
+            if (isUI && rectTransform && originalSiblingIndex >= 0 && transform.parent != null)
+                transform.SetSiblingIndex(originalSiblingIndex);
+            else if (sr)
+                sr.sortingOrder = originalSortingOrder;
+        }
+
+        elevated = on;
     }
+    // ---------------------------------------------------
 }

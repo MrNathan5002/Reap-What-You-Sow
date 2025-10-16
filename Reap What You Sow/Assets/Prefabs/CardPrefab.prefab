@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6b2dc1be698d1645abe09186e13003b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arrowPrefab: {fileID: 6273317170180509043, guid: 8aaae9e3e731aee4babdb0579ffe3a87, type: 3}
+  arrowPrefab: {fileID: 4081139466833409096, guid: c2bcd61a7eaa81742b0c3e15137352fe, type: 3}
   dotPrefab: {fileID: 4081139466833409096, guid: c2bcd61a7eaa81742b0c3e15137352fe, type: 3}
   poolSize: 10
   spacing: 0.5
@@ -213,7 +213,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectScale: 1.1
-  cardPlay: {x: 50, y: 50}
-  playPosition: {x: -100, y: 0, z: 0}
+  cardPlay: {x: 0, y: 0}
+  playPosition: {x: 0, y: 0, z: 0}
   glowEffect: {fileID: 0}
   playArrow: {fileID: 0}
+  hoverZOffset: -0.5
+  hoverYOffset: 2
+  sortingOrderBoost: 100

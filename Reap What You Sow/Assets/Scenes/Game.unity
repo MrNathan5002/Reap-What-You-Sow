@@ -583,9 +583,9 @@ MonoBehaviour:
   deckManager: {fileID: 1892099946}
   cardPrefab: {fileID: 6510743600002016390, guid: 03e0b3566c374c9488439e5fe8e77367, type: 3}
   handTransform: {fileID: 1544326082}
-  fanSpread: -6
+  fanSpread: 0
   cardSpacing: 12
-  verticalSpacing: 5
+  verticalSpacing: 0
   Handsize: 6
   cardsInHand: []
 --- !u!1 &1485149402
