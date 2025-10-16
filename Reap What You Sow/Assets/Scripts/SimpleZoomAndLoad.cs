@@ -22,7 +22,7 @@ public class SimpleZoomAndLoad : MonoBehaviour
     public int pixelsPerUnit = 0;         // e.g., 16 to snap during move; 0 = off
 
     [Header("Transition")]
-    public string gameSceneName = "Game";
+    public string gameSceneName = "MainMenu";
     [Tooltip("TV power-off effect. If missing, will load the scene directly after zoom.")]
     public TVPowerOffTransition tvPowerOff;   // assign in Inspector (recommended)
 

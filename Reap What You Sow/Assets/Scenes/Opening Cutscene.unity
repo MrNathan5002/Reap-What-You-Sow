@@ -1236,7 +1236,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   useUnscaledTime: 1
   pixelsPerUnit: 0
-  gameSceneName: Game
+  gameSceneName: Main Menu
   tvPowerOff: {fileID: 0}
 --- !u!1 &2114233298
 GameObject:
