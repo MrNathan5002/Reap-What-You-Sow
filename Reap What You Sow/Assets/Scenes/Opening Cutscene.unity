@@ -174,7 +174,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 1.1420996
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -1442,7 +1442,7 @@ MonoBehaviour:
   lightFadeTime: 0.15
   useUnscaledTime: 1
   flashColor: {r: 1, g: 1, b: 1, a: 1}
-  lineThickness: 0.001
+  lineThickness: 0
   endXSquash: 2
   collapseEase:
     serializedVersion: 2
