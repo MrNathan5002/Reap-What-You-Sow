@@ -162,7 +162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectScale: 1.1
-  cardPlay: {x: 0, y: 0}
+  cardPlay: {x: 200, y: 200}
   playPosition: {x: 0, y: 0, z: 0}
-  glowEffect: {fileID: -2253911629886400664, guid: 6b00b4c3678a8d546855fb9fedbc0328, type: 3}
-  playArrow: {fileID: -2253911629886400664, guid: d89549138ad86b94b92460ec0d1ae035, type: 3}
+  glowEffect: {fileID: 0}
+  playArrow: {fileID: 0}
