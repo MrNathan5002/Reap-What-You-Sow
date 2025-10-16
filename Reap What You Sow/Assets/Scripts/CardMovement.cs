@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
@@ -27,8 +27,11 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
     [SerializeField] private GameObject glowEffect;
     [SerializeField] private GameObject playArrow;
 
+    private ArcRenderer arc; // ← the arc on this card only
+
     void Awake()
     {
+        arc = GetComponentInChildren<ArcRenderer>(true);
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
         isUI = (rectTransform != null && canvas != null);
@@ -43,11 +46,16 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
 
         if (glowEffect) glowEffect.SetActive(false);
         if (playArrow) playArrow.SetActive(false);
+
+        // --- NEW: ensure the arc starts hidden ---
+        arc?.Show(false);
     }
 
     void OnDisable()
     {
         if (mousePointer != null && mousePointer.enabled) mousePointer.Disable();
+        // --- NEW: hide arc if this object gets disabled mid-drag ---
+        arc?.Show(false);
     }
 
     void Update()
@@ -78,6 +86,9 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         transform.localPosition = originalLocalPos;
         if (glowEffect) glowEffect.SetActive(false);
         if (playArrow) playArrow.SetActive(false);
+
+        // --- NEW: hide arc when drag/play ends ---
+        arc?.Show(false);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -102,6 +113,9 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         if (currentState != 1) return;
 
         currentState = 2;
+
+        // --- NEW: show arc when dragging begins ---
+        arc?.Show(true);
 
         if (isUI)
         {
@@ -138,6 +152,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
                     currentState = 3;
                     if (playArrow) playArrow.SetActive(true);
                     transform.localPosition = playPosition;
+                    // keep arc visible while in play state (still holding mouse)
+                    arc?.Show(true);
                 }
             }
         }
@@ -156,6 +172,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
                 currentState = 3;
                 if (playArrow) playArrow.SetActive(true);
                 transform.localPosition = playPosition;
+                // keep arc visible while in play state (still holding mouse)
+                arc?.Show(true);
             }
         }
     }
@@ -169,6 +187,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
     private void HandleDragState()
     {
         transform.localRotation = Quaternion.identity;
+        // ensure arc remains on during drag (in case anything toggled it)
+        arc?.Show(true);
     }
 
     private void HandlePlayState()
@@ -181,6 +201,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         {
             currentState = 2;
             if (playArrow) playArrow.SetActive(false);
+            // still dragging → keep arc on
+            arc?.Show(true);
         }
     }
 }

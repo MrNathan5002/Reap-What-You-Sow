@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ArcRenderer : MonoBehaviour
@@ -6,6 +6,7 @@ public class ArcRenderer : MonoBehaviour
     public GameObject arrowPrefab;
     public GameObject dotPrefab;
     public int poolSize = 50;
+    private bool _active = false;
 
     private readonly List<GameObject> dotPool = new List<GameObject>();
     private GameObject arrowInstance;
@@ -25,10 +26,13 @@ public class ArcRenderer : MonoBehaviour
         arrowInstance = Instantiate(arrowPrefab, transform);
         arrowInstance.transform.localPosition = Vector3.zero;
         InitializeDotPool(poolSize);
+        Show(false);
     }
 
     void Update()
     {
+        if (!_active) return;                         // ← gate everything
+
         Vector3 mousePos = GetMouseWorldPosition();
         Vector3 startPos = transform.position;
         Vector3 midPoint = CalculateMidPoint(startPos, mousePos);
@@ -112,5 +116,13 @@ public class ArcRenderer : MonoBehaviour
             dot.SetActive(false);
             dotPool.Add(dot);
         }
+    }
+
+    public void Show(bool on)                         // ← public toggle
+    {
+        _active = on;
+        if (arrowInstance) arrowInstance.SetActive(on);
+        for (int i = 0; i < dotPool.Count; i++) dotPool[i].SetActive(on && dotPool[i].activeSelf);
+        if (!on) for (int i = 0; i < dotPool.Count; i++) dotPool[i].SetActive(false);
     }
 }
