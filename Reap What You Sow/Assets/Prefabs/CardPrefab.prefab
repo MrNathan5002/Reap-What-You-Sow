@@ -1,5 +1,55 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1734984076990853301
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8301427081792082653}
+  - component: {fileID: 1222283900751767046}
+  m_Layer: 0
+  m_Name: ArcPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8301427081792082653
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734984076990853301}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6745638376722361261}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1222283900751767046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734984076990853301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6b2dc1be698d1645abe09186e13003b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arrowPrefab: {fileID: 4081139466833409096, guid: c2bcd61a7eaa81742b0c3e15137352fe, type: 3}
+  dotPrefab: {fileID: 4081139466833409096, guid: c2bcd61a7eaa81742b0c3e15137352fe, type: 3}
+  poolSize: 10
+  spacing: 0.5
+  arrowAngleAdjustment: 0
+  dotsToSkip: 1
 --- !u!1 &6510743600002016390
 GameObject:
   m_ObjectHideFlags: 0
@@ -13,6 +63,8 @@ GameObject:
   - component: {fileID: -4893612797973282472}
   - component: {fileID: 5319226644736695299}
   - component: {fileID: 5617326238518490265}
+  - component: {fileID: 5736201496200341203}
+  - component: {fileID: -5802414618866890772}
   m_Layer: 0
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -31,7 +83,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 16, y: 16, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8301427081792082653}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -162,7 +215,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectScale: 1.1
-  cardPlay: {x: 200, y: 200}
-  playPosition: {x: 0, y: 0, z: 0}
+  hoverYOffset: 2
+  hoverZOffset: -0.5
   glowEffect: {fileID: 0}
-  playArrow: {fileID: 0}
+  sortingOrderBoost: 100
+--- !u!114 &5736201496200341203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6510743600002016390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661e6048647192c4b86c43369337cf7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  energyCost: 1
+  lifetime: 3
+  baseCandyPerRound: 2
+  cropSprite: {fileID: -2320095610103265720, guid: 34ff0ac224b977c4e880768cafacafab, type: 3}
+  deck: {fileID: 0}
+  board: {fileID: 0}
+  grid: {fileID: 0}
+  hand: {fileID: 0}
+--- !u!114 &-5802414618866890772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6510743600002016390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01ada7c321341174698f7b71c51c9037, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
