@@ -20,5 +20,7 @@ public class CardEditor : ScriptableObject
     public int upgradedLifetime = 3;
     public int upgradedTreatCandy = 3;
     public int upgradedTrickCandy = 1;
+    public Sprite cropSprite;
+    public Sprite cardSprite;
 }
 
