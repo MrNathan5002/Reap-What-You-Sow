@@ -56,4 +56,14 @@ public class HandManager : MonoBehaviour
             cardsInHand[i].transform.localPosition = new Vector3(horizontalOffset, verticalOffset, 0f);
         }
     }
+
+    public void DiscardAll()
+    {
+        // Destroy all card visuals and clear list
+        for (int i = cardsInHand.Count - 1; i >= 0; i--)
+        {
+            if (cardsInHand[i]) Destroy(cardsInHand[i]);
+        }
+        cardsInHand.Clear();
+    }
 }

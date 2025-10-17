@@ -12,11 +12,9 @@ public class DeckManagerEditor : Editor
         DrawDefaultInspector();
 
         DeckManager deckManager = (DeckManager)target;
-        if (GUILayout.Button("Draw Next Card")){
-            HandManager handManager = FindObjectOfType<HandManager>();
-            if (handManager != null){
-                deckManager.DrawCard(handManager);
-            }
+        if (GUILayout.Button("Draw Up To Hand Size"))
+        {
+            deckManager.DrawToHandSize();
         }
     }
 }
