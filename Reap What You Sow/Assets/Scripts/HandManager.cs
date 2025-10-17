@@ -66,4 +66,15 @@ public class HandManager : MonoBehaviour
         }
         cardsInHand.Clear();
     }
+
+    public void RemoveCardGO(GameObject go)
+    {
+        int i = cardsInHand.IndexOf(go);
+        if (i >= 0)
+        {
+            cardsInHand.RemoveAt(i);
+            Destroy(go);
+        }
+    }
+
 }

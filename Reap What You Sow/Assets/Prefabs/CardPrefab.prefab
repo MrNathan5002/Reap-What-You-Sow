@@ -63,6 +63,7 @@ GameObject:
   - component: {fileID: -4893612797973282472}
   - component: {fileID: 5319226644736695299}
   - component: {fileID: 5617326238518490265}
+  - component: {fileID: 5736201496200341203}
   m_Layer: 0
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -213,10 +214,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectScale: 1.1
-  cardPlay: {x: 0, y: 0}
-  playPosition: {x: 0, y: 0, z: 0}
-  glowEffect: {fileID: 0}
-  playArrow: {fileID: 0}
-  hoverZOffset: -0.5
   hoverYOffset: 2
+  hoverZOffset: -0.5
+  glowEffect: {fileID: 0}
   sortingOrderBoost: 100
+--- !u!114 &5736201496200341203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6510743600002016390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661e6048647192c4b86c43369337cf7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  energyCost: 1
+  lifetime: 3
+  baseCandyPerRound: 2
+  cropSprite: {fileID: -2320095610103265720, guid: 34ff0ac224b977c4e880768cafacafab, type: 3}
+  deck: {fileID: 0}
+  board: {fileID: 0}
+  grid: {fileID: 0}
+  hand: {fileID: 0}

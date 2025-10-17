@@ -12,6 +12,9 @@ public class DeckManager : MonoBehaviour
     [Header("Refs")]
     public HandManager hand;                   // assign in Inspector
 
+    [Header("Board")]
+    public BoardManager board;
+
     // Piles
     readonly List<CardInstance> drawPile = new();
     readonly List<CardInstance> discardPile = new();
@@ -47,6 +50,7 @@ public class DeckManager : MonoBehaviour
     void Start()
     {
         InitializeRun(starter, seed);
+        if (!board) board = FindObjectOfType<BoardManager>();
         StartNight();
     }
 
@@ -100,10 +104,16 @@ public class DeckManager : MonoBehaviour
         OnRoundStarted?.Invoke(CurrentRound, CurrentRound == TrickRoundIndex);
     }
 
-    public void EndTurn() // hook this to your End Turn button
+    public void EndTurn()
     {
-        // Resolve crops/effects later (Step 2); for now, add 0 candy
-        ResolveRoundCandy(0);
+        // Resolve crops/effects now (Step 2)
+        int gained = 0;
+        if (board)
+        {
+            bool isTrick = (CurrentRound == TrickRoundIndex);
+            gained = board.ResolveRound(includeDiagonals: true, isTrickRound: isTrick);
+        }
+        ResolveRoundCandy(gained);
 
         DiscardHandAll();
         if (CurrentRound < RoundsPerNight)
@@ -114,9 +124,10 @@ public class DeckManager : MonoBehaviour
         {
             bool success = TotalCandy >= QuotaCandy;
             OnNightEnded?.Invoke(success);
-            // Later: show rewards if success/failure flow desired
+            // Rewards later
         }
     }
+
 
     void ResolveRoundCandy(int gained)
     {
@@ -231,4 +242,20 @@ public class DeckManager : MonoBehaviour
         foreach (var c in discardPile) d[c.def] = d.GetValueOrDefault(c.def) + 1;
         return d;
     }
+
+    public bool RemoveOneByDefFromHand(CardEditor def)
+    {
+        int idx = handLogic.FindIndex(ci => ci.def == def);
+        if (idx >= 0)
+        {
+            var ci = handLogic[idx];
+            handLogic.RemoveAt(idx);
+            discardPile.Add(ci);
+            OnHandChanged?.Invoke();
+            OnDeckChanged?.Invoke();
+            return true;
+        }
+        return false;
+    }
+
 }
