@@ -31,20 +31,23 @@ public class HandManager : MonoBehaviour
         UpdateHandVisuals();
     }
 
-    void Update(){
+    void Update()
+    {
         //UpdateHandVisuals();
     }
     private void UpdateHandVisuals()
     {
         int cardCount = cardsInHand.Count;
 
-        if (cardCount == 1){
+        if (cardCount == 1)
+        {
             cardsInHand[0].transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
             cardsInHand[0].transform.localPosition = new Vector3(0f, 0f, 0f);
             return;
         }
 
-        for (int i=0; i < cardCount; i++){
+        for (int i = 0; i < cardCount; i++)
+        {
             float rotationAngle = (fanSpread * (i - (cardCount - 1) / 2f));
             cardsInHand[i].transform.localRotation = Quaternion.Euler(0f, 0f, rotationAngle);
 
@@ -77,4 +80,18 @@ public class HandManager : MonoBehaviour
         }
     }
 
+    public void AddCardToHand(CardInstance cardInstance)
+    {
+        GameObject newCard = Instantiate(cardPrefab, handTransform.position, Quaternion.identity, handTransform);
+        cardsInHand.Add(newCard);
+
+        // Set data on display AND instance link
+        var disp = newCard.GetComponent<CardDisplay>();
+        if (disp) disp.cardData = cardInstance.def;
+
+        var hc = newCard.GetComponent<HandCard>() ?? newCard.AddComponent<HandCard>();
+        hc.instance = cardInstance;
+
+        UpdateHandVisuals();
+    }
 }

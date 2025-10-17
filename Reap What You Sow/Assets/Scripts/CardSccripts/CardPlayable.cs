@@ -29,32 +29,41 @@ public class CardPlayable : MonoBehaviour, IPointerUpHandler
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (!deck || !board || !grid || !hand || display == null || display.cardData == null) return;
+        if (!deck || !board || !grid || !hand) return;
 
-        // Convert mouse to the grid cell under cursor
+        var hc = GetComponent<HandCard>();
+        var disp = GetComponent<CardDisplay>();
+        if (hc == null || hc.instance == null || disp == null || disp.cardData == null) return;
+
+        var def = disp.cardData;
+        bool upgraded = hc.instance.isUpgraded;
+
+        int cost = upgraded ? def.upgradedEnergy : def.baseEnergy;
+        int lifetime = upgraded ? def.upgradedLifetime : def.baseLifetime;
+        int treatY = upgraded ? def.upgradedTreatCandy : def.baseTreatCandy;
+        int trickY = upgraded ? def.upgradedTrickCandy : def.baseTrickCandy;
+
+        // Convert mouse to grid cell
         var cam = Camera.main;
         Vector3 sp = eventData.position;
         float z = Mathf.Abs(grid.transform.position.z - cam.transform.position.z);
         var world = cam.ScreenToWorldPoint(new Vector3(sp.x, sp.y, z));
         var cell = grid.WorldToGrid(world);
 
-        // Validate
-        if (!board.CanPlace(cell))
-            return;
+        if (!board.CanPlace(cell)) return;
+        if (!deck.CanAfford(cost)) return;
 
-        if (!deck.CanAfford(energyCost))
-            return;
-
-        // Place crop
-        bool placed = board.PlaceCrop(cell, /*upgraded:*/ false, lifetime, baseCandyPerRound, cropSprite);
+        // Place crop with both treat & trick yields baked in
+        bool placed = board.PlaceCropAdvanced(cell, upgraded, lifetime, treatY, trickY, cropSprite);
         if (!placed) return;
 
-        // Spend energy and discard this card (by def) from hand
-        deck.SpendEnergy(energyCost);
-        deck.RemoveOneByDefFromHand(display.cardData);
+        // Spend energy and discard this specific instance
+        deck.SpendEnergy(cost);
+        deck.DiscardInstanceFromHand(hc.instance.instanceId);
 
-        // Remove the visual card GO from the hand
+        // Remove visual
         hand.RemoveCardGO(gameObject);
     }
 }
+
 

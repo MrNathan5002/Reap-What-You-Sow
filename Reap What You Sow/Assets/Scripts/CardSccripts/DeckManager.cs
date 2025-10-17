@@ -154,7 +154,7 @@ public class DeckManager : MonoBehaviour
 
             var top = PopTop(drawPile);
             handLogic.Add(top);
-            hand.AddCardToHand(top.def); // visuals still take CardEditor for now
+            hand.AddCardToHand(top); // visuals still take CardEditor for now
         }
         OnHandChanged?.Invoke();
         OnDeckChanged?.Invoke();
@@ -258,4 +258,17 @@ public class DeckManager : MonoBehaviour
         return false;
     }
 
+    public bool DiscardInstanceFromHand(int instanceId)
+    {
+        int i = handLogic.FindIndex(ci => ci.instanceId == instanceId);
+        if (i < 0) return false;
+        var ci = handLogic[i];
+        handLogic.RemoveAt(i);
+        discardPile.Add(ci);
+        OnHandChanged?.Invoke();
+        OnDeckChanged?.Invoke();
+        return true;
+    }
 }
+
+
