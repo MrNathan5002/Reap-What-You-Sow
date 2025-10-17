@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CardDisplay : MonoBehaviour
+public class CropDisplay : MonoBehaviour
 {
     public CardEditor cardData;
     private SpriteRenderer spriteRenderer;
@@ -19,6 +19,6 @@ public class CardDisplay : MonoBehaviour
 
     public void UpdateCardDisplay()
     {
-        spriteRenderer.sprite = cardData.cardSprite;
+        spriteRenderer.sprite = cardData.cropSprite;
     }
 }

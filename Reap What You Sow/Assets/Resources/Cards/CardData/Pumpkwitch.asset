@@ -12,7 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ac57a7c3cc5ede48ae60ed997994237, type: 3}
   m_Name: Pumpkwitch
   m_EditorClassIdentifier: 
-  cardTreat: 
-  cardTrick: 
-  cardCandy: 0
-  neighborCandy: 0
+  id: 
+  displayName: 
+  baseEnergy: 1
+  baseLifetime: 3
+  baseTreatCandy: 2
+  baseTrickCandy: 0
+  hasUpgrade: 0
+  upgradedEnergy: 1
+  upgradedLifetime: 3
+  upgradedTreatCandy: 3
+  upgradedTrickCandy: 1
+  cropSprite: {fileID: 7678946036126639133, guid: 6b00b4c3678a8d546855fb9fedbc0328, type: 3}
+  cardSprite: {fileID: -5050702283373310293, guid: 6b00b4c3678a8d546855fb9fedbc0328, type: 3}

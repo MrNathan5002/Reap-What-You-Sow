@@ -38,6 +38,7 @@ public class CardPlayable : MonoBehaviour, IPointerUpHandler
         var def = disp.cardData;
         bool upgraded = hc.instance.isUpgraded;
 
+
         int cost = upgraded ? def.upgradedEnergy : def.baseEnergy;
         int lifetime = upgraded ? def.upgradedLifetime : def.baseLifetime;
         int treatY = upgraded ? def.upgradedTreatCandy : def.baseTreatCandy;

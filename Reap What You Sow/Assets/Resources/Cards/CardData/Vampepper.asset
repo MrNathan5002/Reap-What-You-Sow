@@ -12,7 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ac57a7c3cc5ede48ae60ed997994237, type: 3}
   m_Name: Vampepper
   m_EditorClassIdentifier: 
-  cardTreat: 
-  cardTrick: 
-  cardCandy: 0
-  neighborCandy: 0
+  id: 
+  displayName: 
+  baseEnergy: 1
+  baseLifetime: 3
+  baseTreatCandy: 2
+  baseTrickCandy: 0
+  hasUpgrade: 0
+  upgradedEnergy: 1
+  upgradedLifetime: 3
+  upgradedTreatCandy: 3
+  upgradedTrickCandy: 1
+  cropSprite: {fileID: 2045391355831636367, guid: 26b1fc54bfba728439a48a5de820e0b7, type: 3}
+  cardSprite: {fileID: -7718925641042797649, guid: 26b1fc54bfba728439a48a5de820e0b7, type: 3}

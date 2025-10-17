@@ -12,7 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ac57a7c3cc5ede48ae60ed997994237, type: 3}
   m_Name: Zombtato
   m_EditorClassIdentifier: 
-  cardTreat: 
-  cardTrick: 
-  cardCandy: 0
-  neighborCandy: 0
+  id: 
+  displayName: 
+  baseEnergy: 1
+  baseLifetime: 3
+  baseTreatCandy: 2
+  baseTrickCandy: 0
+  hasUpgrade: 0
+  upgradedEnergy: 1
+  upgradedLifetime: 3
+  upgradedTreatCandy: 3
+  upgradedTrickCandy: 1
+  cropSprite: {fileID: -2320095610103265720, guid: 34ff0ac224b977c4e880768cafacafab, type: 3}
+  cardSprite: {fileID: -1310753141056627244, guid: 34ff0ac224b977c4e880768cafacafab, type: 3}

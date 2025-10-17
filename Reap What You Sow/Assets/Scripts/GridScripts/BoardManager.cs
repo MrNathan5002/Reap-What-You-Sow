@@ -59,6 +59,9 @@ public class BoardManager : MonoBehaviour
         if (!CanPlace(cell) || !grid || !cropPrefab) return false;
 
         Vector3 wpos = grid.GridToWorld(cell);
+        //place after this line to add sprites or sound effects
+
+
         var go = Instantiate(cropPrefab, wpos, Quaternion.identity, cropsParent);
 
         var ci = go.GetComponent<CropInstance>();

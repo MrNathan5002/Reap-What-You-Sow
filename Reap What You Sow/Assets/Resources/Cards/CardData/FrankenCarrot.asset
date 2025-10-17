@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: 
   baseEnergy: 1
   baseLifetime: 3
-  baseTreatCandy: 2
+  baseTreatCandy: 10
   baseTrickCandy: 0
   hasUpgrade: 0
   upgradedEnergy: 1
