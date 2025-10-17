@@ -12,7 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ac57a7c3cc5ede48ae60ed997994237, type: 3}
   m_Name: FrankenCarrot
   m_EditorClassIdentifier: 
-  cardTreat: 
-  cardTrick: 
-  cardCandy: 0
-  neighborCandy: 0
+  id: 
+  displayName: 
+  baseEnergy: 1
+  baseLifetime: 3
+  baseTreatCandy: 2
+  baseTrickCandy: 0
+  hasUpgrade: 0
+  upgradedEnergy: 1
+  upgradedLifetime: 3
+  upgradedTreatCandy: 3
+  upgradedTrickCandy: 1
+  cropSprite: {fileID: 8232202364636906396, guid: 59a1da78af3c95a4b944217ef9f842ef, type: 3}
+  cardSprite: {fileID: 8020417412982510100, guid: 59a1da78af3c95a4b944217ef9f842ef, type: 3}
