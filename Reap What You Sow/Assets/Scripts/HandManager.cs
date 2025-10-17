@@ -77,4 +77,18 @@ public class HandManager : MonoBehaviour
         }
     }
 
+    public void AddCardToHand(CardInstance cardInstance)
+    {
+        GameObject newCard = Instantiate(cardPrefab, handTransform.position, Quaternion.identity, handTransform);
+        cardsInHand.Add(newCard);
+
+        // Set data on display AND instance link
+        var disp = newCard.GetComponent<CardDisplay>();
+        if (disp) disp.cardData = cardInstance.def;
+
+        var hc = newCard.GetComponent<HandCard>() ?? newCard.AddComponent<HandCard>();
+        hc.instance = cardInstance;
+
+        UpdateHandVisuals();
+    }
 }
