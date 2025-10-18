@@ -16,12 +16,16 @@ MonoBehaviour:
   displayName: 
   baseEnergy: 1
   baseLifetime: 3
-  baseTreatCandy: 10
+  baseTreatCandy: 2
   baseTrickCandy: 0
   hasUpgrade: 0
   upgradedEnergy: 1
   upgradedLifetime: 3
   upgradedTreatCandy: 3
   upgradedTrickCandy: 1
+  baseTreatAdjPerNeighbor: 1
+  baseTrickAdjPerNeighbor: -2
+  upgradedTreatAdjPerNeighbor: 0
+  upgradedTrickAdjPerNeighbor: 0
   cropSprite: {fileID: 8232202364636906396, guid: 59a1da78af3c95a4b944217ef9f842ef, type: 3}
   cardSprite: {fileID: 8020417412982510100, guid: 59a1da78af3c95a4b944217ef9f842ef, type: 3}

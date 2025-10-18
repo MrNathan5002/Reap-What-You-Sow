@@ -21,6 +21,14 @@ public class CardEditor : ScriptableObject
     public int upgradedTreatCandy = 3;
     public int upgradedTrickCandy = 1;
 
+    [Header("Adjacency (per neighbor)")]
+    public int baseTreatAdjPerNeighbor = 0;   // e.g., +1 candy per neighbor on Treat
+    public int baseTrickAdjPerNeighbor = 0;   // e.g., -1 candy per neighbor on Trick
+
+    [Header("Adjacency (upgraded)")]
+    public int upgradedTreatAdjPerNeighbor = 0;
+    public int upgradedTrickAdjPerNeighbor = 0;
+
     public Sprite cropSprite;
     public Sprite cardSprite;
 }

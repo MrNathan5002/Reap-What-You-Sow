@@ -53,30 +53,25 @@ public class BoardManager : MonoBehaviour
     public bool CanPlace(Vector2Int c) => InBounds(c) && IsEmpty(c);
 
     /// <summary>Place a crop with per-round Treat/Trick yields.</summary>
-    public bool PlaceCropAdvanced(Vector2Int cell, bool upgraded, int lifetime, int treat, int trick, Sprite sprite = null)
+    public bool PlaceCropFromDef(Vector2Int cell, CardEditor def, bool upgraded, int lifetime, Sprite sprite = null)
     {
         EnsureStorage();
-        if (!CanPlace(cell) || !grid || !cropPrefab) return false;
+        if (!CanPlace(cell) || !grid || !cropPrefab || !def) return false;
 
         Vector3 wpos = grid.GridToWorld(cell);
-        //place after this line to add sprites or sound effects
-
-
         var go = Instantiate(cropPrefab, wpos, Quaternion.identity, cropsParent);
 
-        var ci = go.GetComponent<CropInstance>();
-        if (!ci) ci = go.AddComponent<CropInstance>();
-        ci.Init(cell, upgraded, lifetime, treat, trick);
+        var ci = go.GetComponent<CropInstance>() ?? go.AddComponent<CropInstance>();
+        ci.Init(def, cell, upgraded, lifetime, 0, 0);
 
-        if (sprite)
-        {
-            var sr = go.GetComponent<SpriteRenderer>() ?? go.AddComponent<SpriteRenderer>();
-            sr.sprite = sprite;
-        }
+        // NEW: prefer the sprite argument, otherwise use def.cropSprite
+        var sr = go.GetComponent<SpriteRenderer>() ?? go.AddComponent<SpriteRenderer>();
+        sr.sprite = sprite != null ? sprite : def.cropSprite;
 
         crops[cell.x, cell.y] = ci;
         return true;
     }
+
 
     /// <summary>Resolve one round; returns total candy gained this round.</summary>
     public int ResolveRound(bool includeDiagonals = true, bool isTrickRound = false)
@@ -99,19 +94,32 @@ public class BoardManager : MonoBehaviour
         for (int y = 0; y < grid.Height; y++)
             for (int x = 0; x < grid.Width; x++)
             {
+                // inside the double loop over x,y:
                 var c = crops[x, y];
                 if (!c) continue;
 
-                int baseYield = isTrickRound ? c.trickCandyPerRound : c.treatCandyPerRound;
+                int baseTreat = c.isUpgraded ? c.def.upgradedTreatCandy : c.def.baseTreatCandy;
+                int baseTrick = c.isUpgraded ? c.def.upgradedTrickCandy : c.def.baseTrickCandy;
 
-                // Example adjacency hook (disabled by default):
-                // int neighbors = CountNeighbors(new Vector2Int(x, y), dirs);
-                // baseYield += neighbors;
+                int adjTreat = c.isUpgraded ? c.def.upgradedTreatAdjPerNeighbor : c.def.baseTreatAdjPerNeighbor;
+                int adjTrick = c.isUpgraded ? c.def.upgradedTrickAdjPerNeighbor : c.def.baseTrickAdjPerNeighbor;
 
-                gained += baseYield;
+                // count neighbors (diagonals included if flag set)
+                int neighbors = CountNeighbors(new Vector2Int(x, y), dirs);
 
+                // choose round mode and apply adjacency
+                int roundYield = isTrickRound ? (baseTrick + neighbors * adjTrick)
+                                              : (baseTreat + neighbors * adjTreat);
+
+                // clamp to non-negative (prevents weird negative totals)
+                roundYield = Mathf.Max(0, roundYield);
+
+                gained += roundYield;
+
+                // tick lifetime + collect for removal
                 c.lifetime -= 1;
                 if (c.lifetime <= 0) toRemove.Add(c);
+
             }
 
         // Remove expired crops

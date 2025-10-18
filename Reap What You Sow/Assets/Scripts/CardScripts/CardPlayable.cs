@@ -55,7 +55,7 @@ public class CardPlayable : MonoBehaviour, IPointerUpHandler
         if (!deck.CanAfford(cost)) return;
 
         // Place crop with both treat & trick yields baked in
-        bool placed = board.PlaceCropAdvanced(cell, upgraded, lifetime, treatY, trickY, cropSprite);
+        bool placed = board.PlaceCropFromDef(cell, def, upgraded, lifetime, /*sprite:*/ null);
         if (!placed) return;
 
         // Spend energy and discard this specific instance
