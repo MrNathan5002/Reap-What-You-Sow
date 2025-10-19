@@ -14,10 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entries:
   - def: {fileID: 11400000, guid: cbb6a95ffacba8747801b5cd2af5ac73, type: 2}
-    count: 6
-    startUpgraded: 0
-  - def: {fileID: 11400000, guid: a4b1665e30aeb9e4ea62919e806f8121, type: 2}
     count: 4
+    startUpgraded: 0
+  - def: {fileID: 11400000, guid: 151c70acc99b6144a876a05e969b0028, type: 2}
+    count: 2
+    startUpgraded: 0
+  - def: {fileID: 11400000, guid: 307770651290c524bb35419c54050b57, type: 2}
+    count: 1
+    startUpgraded: 0
+  - def: {fileID: 11400000, guid: bec67f3aad861954485e6a0226b67e0e, type: 2}
+    count: 1
     startUpgraded: 0
   startHandSize: 5
   startEnergyMax: 3

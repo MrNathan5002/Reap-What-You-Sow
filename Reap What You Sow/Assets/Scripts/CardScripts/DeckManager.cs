@@ -29,8 +29,20 @@ public class DeckManager : MonoBehaviour
     public int RoundsPerNight => starter ? starter.roundsPerNight : 5;
     public int CurrentRound { get; private set; } = 0;
     public int TrickRoundIndex { get; private set; } = 0;
-    public int QuotaCandy => starter ? starter.quotaCandy : 40;
     public int TotalCandy { get; private set; } = 0;
+
+    // Player progression per night
+    public int NightIndex { get; private set; } = 0;   // 1,2,3...
+    public int NightCandy { get; private set; } = 0;   // resets each night
+
+    [Header("Quota Growth")]
+    public int quotaGrowthPerNight = 10;               // tweak in Inspector
+
+    public int BaseQuota => starter ? starter.quotaCandy : 40;
+    public int QuotaCandy => BaseQuota + quotaGrowthPerNight * Mathf.Max(0, NightIndex - 1);
+    private bool _resolvingEndTurn = false;
+    private bool _nightOver = false;   // block extra EndTurn after night ends
+
 
     System.Random rng;
 
@@ -59,7 +71,7 @@ public class DeckManager : MonoBehaviour
     public void InitializeRun(StarterDeck starterDeck, int seedOverride = -1)
     {
         drawPile.Clear(); discardPile.Clear(); handLogic.Clear();
-        TotalCandy = 0; CurrentRound = 0;
+        TotalCandy = 0; CurrentRound = 0; NightCandy = 0; NightIndex = 0; CurrentRound = 0;
 
         if (!starterDeck)
         {
@@ -86,13 +98,20 @@ public class DeckManager : MonoBehaviour
         OnCandyChanged?.Invoke(TotalCandy, QuotaCandy);
     }
 
+    // DeckManager.StartNight()
     public void StartNight()
     {
-        // Pick Trick round
+        _nightOver = false;                  // <<< NEW: re-enable EndTurn for new night
+        NightIndex += 1;
+        NightCandy = 0;
+        OnCandyChanged?.Invoke(NightCandy, QuotaCandy);
+        if (board) board.ClearAllCrops();
         TrickRoundIndex = rng.Next(1, RoundsPerNight + 1);
         CurrentRound = 0;
         StartNextRound();
     }
+
+
 
     public void StartNextRound()
     {
@@ -106,7 +125,11 @@ public class DeckManager : MonoBehaviour
 
     public void EndTurn()
     {
-        // Resolve crops/effects now (Step 2)
+        //if (_nightOver) return;
+        if (_resolvingEndTurn) return;   // prevent accidental double-click spam
+        _resolvingEndTurn = true;
+
+        // Resolve crops for THIS round
         int gained = 0;
         if (board)
         {
@@ -115,24 +138,34 @@ public class DeckManager : MonoBehaviour
         }
         ResolveRoundCandy(gained);
 
-        DiscardHandAll();
-        if (CurrentRound < RoundsPerNight)
-        {
-            StartNextRound();
-        }
-        else
-        {
-            bool success = TotalCandy >= QuotaCandy;
-            OnNightEnded?.Invoke(success);
-            // Rewards later
-        }
-    }
+        // Determine if this was the final round *before* changing state
+        bool isFinalRound = (CurrentRound >= RoundsPerNight);
 
+        // Discard hand visuals and logic
+        DiscardHandAll();
+
+        if (isFinalRound)
+        {
+            _nightOver = true;                   // <<< NEW: mark night as ended
+            bool success = NightCandy >= QuotaCandy;
+            OnNightEnded?.Invoke(success);
+            _resolvingEndTurn = false;
+            return;
+        }
+
+        // Otherwise, continue to next round
+        StartNextRound();
+        _resolvingEndTurn = false;
+    }
 
     void ResolveRoundCandy(int gained)
     {
-        TotalCandy += Mathf.Max(0, gained);
-        OnCandyChanged?.Invoke(TotalCandy, QuotaCandy);
+        int add = Mathf.Max(0, gained);
+        TotalCandy += add;      // keep cumulative if you want to surface it later
+        NightCandy += add;      // nightly progress for win/lose
+
+        // IMPORTANT: emit NIGHT progress to the HUD
+        OnCandyChanged?.Invoke(NightCandy, QuotaCandy);
     }
 
     // --- Drawing / Discard ---
@@ -277,6 +310,46 @@ public class DeckManager : MonoBehaviour
         OnDeckChanged?.Invoke();
         return true;
     }
+
+    // Expose piles to RewardManager in a safe way
+    public IEnumerable<CardInstance> IterAllCopies()
+    {
+        foreach (var c in handLogic) yield return c;
+        foreach (var c in drawPile) yield return c;
+        foreach (var c in discardPile) yield return c;
+    }
+
+    // Remove a specific instance from whichever pile it lives in
+    public bool RemoveInstance(CardInstance target)
+    {
+        if (target == null) return false;
+
+        // Can't remove visuals from hand here; we just remove from logic piles.
+        int i = handLogic.IndexOf(target);
+        if (i >= 0) { handLogic.RemoveAt(i); OnHandChanged?.Invoke(); OnDeckChanged?.Invoke(); return true; }
+
+        i = drawPile.IndexOf(target);
+        if (i >= 0) { drawPile.RemoveAt(i); OnDeckChanged?.Invoke(); return true; }
+
+        i = discardPile.IndexOf(target);
+        if (i >= 0) { discardPile.RemoveAt(i); OnDeckChanged?.Invoke(); return true; }
+
+        return false;
+    }
+
+    // Allow RewardManager to bump player stats
+    public void SetHandSize(int newSize)
+    {
+        HandSize = Mathf.Max(1, newSize);
+        OnHandChanged?.Invoke();
+    }
+
+    public void SetEnergyMax(int newMax)
+    {
+        EnergyMax = Mathf.Max(1, newMax);
+        OnEnergyChanged?.Invoke(Energy, EnergyMax);
+    }
+
 }
 
 

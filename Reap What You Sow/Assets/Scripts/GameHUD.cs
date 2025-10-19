@@ -12,7 +12,8 @@ public class GameHUD : MonoBehaviour
     public TMP_Text candyText;
     public TMP_Text roundText;                   // e.g., "Round 2/5"
     public TMP_Text modeText;                    // "TREAT" or "TRICK"
-    
+    public TMP_Text nightText;  // assign in Inspector
+
     [Header("Optional: Visuals")]
     public EnergyPips energyPips;            // optional pip row (below)
     public Color treatColor = new Color(0.9f, 0.95f, 1f);
@@ -60,12 +61,10 @@ public class GameHUD : MonoBehaviour
     void HandleRoundStarted(int roundIndex, bool isTrick)
     {
         if (roundText) roundText.text = $"Round {roundIndex}/{deck.RoundsPerNight}";
-        if (modeText)
-        {
-            modeText.text = isTrick ? "TRICK" : "TREAT";
-            modeText.color = isTrick ? trickColor : treatColor;
-        }
+        if (modeText) { modeText.text = isTrick ? "TRICK" : "TREAT"; /* color as before */ }
+        if (nightText) nightText.text = $"Night {deck.NightIndex}";
     }
+
 
     void HandleNightEnded(bool success)
     {

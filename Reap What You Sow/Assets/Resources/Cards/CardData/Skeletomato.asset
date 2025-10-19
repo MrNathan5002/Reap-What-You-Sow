@@ -18,7 +18,7 @@ MonoBehaviour:
   baseLifetime: 1
   baseTreatCandy: 3
   baseTrickCandy: 3
-  hasUpgrade: 0
+  hasUpgrade: 1
   upgradedEnergy: 0
   upgradedLifetime: 1
   upgradedTreatCandy: 3
@@ -27,6 +27,10 @@ MonoBehaviour:
   baseTrickAdjPerNeighbor: 0
   upgradedTreatAdjPerNeighbor: 0
   upgradedTrickAdjPerNeighbor: 0
+  treatFlipNeighbors: 0
+  trickFlipNeighbors: 0
+  treatAuraToNeighbors: 0
+  trickAuraToNeighbors: 0
   isSpell: 0
   spellKind: 0
   spellAmount: 0
