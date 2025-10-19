@@ -40,40 +40,37 @@ public class RewardManager : MonoBehaviour
 
     void HandleNightEnded(bool success)
     {
+        if (!panel)
+        {
+            deck.InitializeRun(deck.starter, deck.seed);
+            deck.StartNight();
+            return;
+        }
+
+        if (!panel.gameObject.activeSelf) panel.gameObject.SetActive(true);
+
         if (!success)
         {
-            // Simple fail flow: show a single option to restart the run
-            if (!panel) { deck.InitializeRun(deck.starter, deck.seed); deck.StartNight(); return; }
             panel.Show("Failed Quota", "Restart Run", "Quit", pick =>
             {
-                if (pick == 0)
-                {
-                    deck.InitializeRun(deck.starter, deck.seed);
-                    deck.StartNight();
-                }
+                if (pick == 0) { deck.InitializeRun(deck.starter, deck.seed); deck.StartNight(); }
                 else
                 {
 #if UNITY_EDITOR
                     UnityEditor.EditorApplication.isPlaying = false;
 #else
-                    Application.Quit();
+                Application.Quit();
 #endif
                 }
             });
             return;
         }
 
-        // Success: show 2 choices
         var choices = GenerateTwoChoices();
-        if (!panel) { ApplyChoice(choices[0]); deck.StartNight(); return; }
-
-        panel.Show("Night Cleared!",
+        panel.Show($"Night {deck.NightIndex} Cleared!",
                    FormatChoice(choices[0]),
                    FormatChoice(choices[1]),
-                   pick => {
-                       ApplyChoice(choices[Mathf.Clamp(pick, 0, 1)]);
-                       deck.StartNight();
-                   });
+                   pick => { ApplyChoice(choices[Mathf.Clamp(pick, 0, 1)]); deck.StartNight(); });
     }
 
     // ----- Choice generation -----

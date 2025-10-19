@@ -663,7 +663,7 @@ GameObject:
   - component: {fileID: 336634706}
   - component: {fileID: 336634705}
   m_Layer: 5
-  m_Name: DrawPile (1)
+  m_Name: DiscardPile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2773,6 +2773,7 @@ MonoBehaviour:
   optionBButton: {fileID: 139044542}
   optionAText: {fileID: 961818298}
   optionBText: {fileID: 2110180411}
+  cg: {fileID: 0}
 --- !u!114 &1444262696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2802,7 +2803,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 16
 --- !u!222 &1444262697
 CanvasRenderer:
   m_ObjectHideFlags: 0

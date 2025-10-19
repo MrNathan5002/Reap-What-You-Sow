@@ -42,7 +42,7 @@ public class DeckManager : MonoBehaviour
     public int QuotaCandy => BaseQuota + quotaGrowthPerNight * Mathf.Max(0, NightIndex - 1);
     private bool _resolvingEndTurn = false;
     private bool _nightOver = false;   // block extra EndTurn after night ends
-
+    private int _roundsRemaining = 0;
 
     System.Random rng;
 
@@ -101,15 +101,24 @@ public class DeckManager : MonoBehaviour
     // DeckManager.StartNight()
     public void StartNight()
     {
-        _nightOver = false;                  // <<< NEW: re-enable EndTurn for new night
+        _nightOver = false;                  // re-enable End Turn for the new night
+
         NightIndex += 1;
         NightCandy = 0;
+
         OnCandyChanged?.Invoke(NightCandy, QuotaCandy);
+
         if (board) board.ClearAllCrops();
+
+        // >>> NEW: exactly this many resolves this night
+        _roundsRemaining = RoundsPerNight;
+
         TrickRoundIndex = rng.Next(1, RoundsPerNight + 1);
         CurrentRound = 0;
+
         StartNextRound();
     }
+
 
 
 
@@ -125,11 +134,10 @@ public class DeckManager : MonoBehaviour
 
     public void EndTurn()
     {
-        //if (_nightOver) return;
-        if (_resolvingEndTurn) return;   // prevent accidental double-click spam
+        if (_nightOver) return;              // block extra clicks after night end
+        if (_resolvingEndTurn) return;
         _resolvingEndTurn = true;
 
-        // Resolve crops for THIS round
         int gained = 0;
         if (board)
         {
@@ -138,25 +146,26 @@ public class DeckManager : MonoBehaviour
         }
         ResolveRoundCandy(gained);
 
-        // Determine if this was the final round *before* changing state
-        bool isFinalRound = (CurrentRound >= RoundsPerNight);
-
-        // Discard hand visuals and logic
+        // Discard hand visuals/logic
         DiscardHandAll();
 
-        if (isFinalRound)
+        // >>> NEW: authoritative resolve counter
+        _roundsRemaining = Mathf.Max(0, _roundsRemaining - 1);
+
+        if (_roundsRemaining <= 0)
         {
-            _nightOver = true;                   // <<< NEW: mark night as ended
-            bool success = NightCandy >= QuotaCandy;
-            OnNightEnded?.Invoke(success);
+            _nightOver = true;                               // stop further EndTurn calls
+            bool success = NightCandy >= QuotaCandy;         // nightly check
+            OnNightEnded?.Invoke(success);                   // RewardManager shows panel
             _resolvingEndTurn = false;
             return;
         }
 
-        // Otherwise, continue to next round
+        // Otherwise continue to next round
         StartNextRound();
         _resolvingEndTurn = false;
     }
+
 
     void ResolveRoundCandy(int gained)
     {
