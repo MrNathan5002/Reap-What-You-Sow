@@ -53,27 +53,25 @@ public class BoardManager : MonoBehaviour
     public bool CanPlace(Vector2Int c) => InBounds(c) && IsEmpty(c);
 
     /// <summary>Place a crop with per-round Treat/Trick yields.</summary>
-    public bool PlaceCropAdvanced(Vector2Int cell, bool upgraded, int lifetime, int treat, int trick, Sprite sprite = null)
+    public bool PlaceCropFromDef(Vector2Int cell, CardEditor def, bool upgraded, int lifetime, Sprite sprite = null)
     {
         EnsureStorage();
-        if (!CanPlace(cell) || !grid || !cropPrefab) return false;
+        if (!CanPlace(cell) || !grid || !cropPrefab || !def) return false;
 
         Vector3 wpos = grid.GridToWorld(cell);
         var go = Instantiate(cropPrefab, wpos, Quaternion.identity, cropsParent);
 
-        var ci = go.GetComponent<CropInstance>();
-        if (!ci) ci = go.AddComponent<CropInstance>();
-        ci.Init(cell, upgraded, lifetime, treat, trick);
+        var ci = go.GetComponent<CropInstance>() ?? go.AddComponent<CropInstance>();
+        ci.Init(def, cell, upgraded, lifetime, 0, 0);
 
-        if (sprite)
-        {
-            var sr = go.GetComponent<SpriteRenderer>() ?? go.AddComponent<SpriteRenderer>();
-            sr.sprite = sprite;
-        }
+        // NEW: prefer the sprite argument, otherwise use def.cropSprite
+        var sr = go.GetComponent<SpriteRenderer>() ?? go.AddComponent<SpriteRenderer>();
+        sr.sprite = sprite != null ? sprite : def.cropSprite;
 
         crops[cell.x, cell.y] = ci;
         return true;
     }
+
 
     /// <summary>Resolve one round; returns total candy gained this round.</summary>
     public int ResolveRound(bool includeDiagonals = true, bool isTrickRound = false)
@@ -93,25 +91,76 @@ public class BoardManager : MonoBehaviour
             dirs.Add(new Vector2Int(-1, 1));
         }
 
-        for (int y = 0; y < grid.Height; y++)
-            for (int x = 0; x < grid.Width; x++)
+        int W = grid.Width, H = grid.Height;
+
+        // --- Pass 1: neighbor effects landing on each cell ---
+        bool[,] flip = new bool[W, H];   // if true, that cell flips Treat<->Trick for this round
+        int[,] aura = new int[W, H];    // additive yield from neighbors
+
+        for (int y = 0; y < H; y++)
+            for (int x = 0; x < W; x++)
+            {
+                var src = crops[x, y];
+                if (!src || !src.def) continue;
+
+                // Provider uses the GLOBAL round to decide which neighbor effect it emits
+                bool srcIsTrick = isTrickRound;
+
+                bool doFlip = srcIsTrick ? src.def.trickFlipNeighbors : src.def.treatFlipNeighbors;
+                int addAura = srcIsTrick ? src.def.trickAuraToNeighbors : src.def.treatAuraToNeighbors;
+
+                if (!doFlip && addAura == 0) continue;
+
+                foreach (var d in dirs)
+                {
+                    var n = new Vector2Int(x, y) + d;
+                    if (!InBounds(n)) continue;
+                    if (crops[n.x, n.y] == null) continue;
+
+                    if (doFlip) flip[n.x, n.y] = true;      // any source can set flip
+                    if (addAura != 0) aura[n.x, n.y] += addAura;
+                }
+            }
+
+        // --- Pass 2: compute local yields with possible flip + adjacency + aura ---
+        for (int y = 0; y < H; y++)
+            for (int x = 0; x < W; x++)
             {
                 var c = crops[x, y];
-                if (!c) continue;
+                if (!c || !c.def) continue;
 
-                int baseYield = isTrickRound ? c.trickCandyPerRound : c.treatCandyPerRound;
+                // Local mode: global round XOR flip-on-this-cell
+                bool localIsTrick = isTrickRound ^ flip[x, y];
 
-                // Example adjacency hook (disabled by default):
-                // int neighbors = CountNeighbors(new Vector2Int(x, y), dirs);
-                // baseYield += neighbors;
+                // Base & adjacency per neighbor (you already store both)
+                int baseTreat = c.isUpgraded ? c.def.upgradedTreatCandy : c.def.baseTreatCandy;
+                int baseTrick = c.isUpgraded ? c.def.upgradedTrickCandy : c.def.baseTrickCandy;
 
-                gained += baseYield;
+                int adjTreat = c.isUpgraded ? c.def.upgradedTreatAdjPerNeighbor : c.def.baseTreatAdjPerNeighbor;
+                int adjTrick = c.isUpgraded ? c.def.upgradedTrickAdjPerNeighbor : c.def.baseTrickAdjPerNeighbor;
 
+                // neighbors (diagonals included if set)
+                int neighbors = CountNeighbors(new Vector2Int(x, y), dirs);
+
+                int baseYield = localIsTrick ? baseTrick : baseTreat;
+                int adjPer = localIsTrick ? adjTrick : adjTreat;
+
+                int roundYield = baseYield + neighbors * adjPer;
+
+                // add aura from neighbors landing on this cell
+                roundYield += aura[x, y];
+
+                // clamp to non-negative
+                if (roundYield < 0) roundYield = 0;
+
+                gained += roundYield;
+
+                // lifetime tick
                 c.lifetime -= 1;
                 if (c.lifetime <= 0) toRemove.Add(c);
             }
 
-        // Remove expired crops
+        // cleanup expired
         foreach (var dead in toRemove)
         {
             crops[dead.cell.x, dead.cell.y] = null;
@@ -120,6 +169,7 @@ public class BoardManager : MonoBehaviour
 
         return Mathf.Max(0, gained);
     }
+
 
     int CountNeighbors(Vector2Int cell, List<Vector2Int> dirs)
     {
@@ -144,6 +194,24 @@ public class BoardManager : MonoBehaviour
                     crops[x, y] = null;
                 }
             }
+    }
+
+    public bool HasCropAt(Vector2Int cell)
+    {
+        EnsureStorage();
+        if (!InBounds(cell)) return false;
+        return crops[cell.x, cell.y] != null;
+    }
+
+    public bool RemoveCropAt(Vector2Int cell)
+    {
+        EnsureStorage();
+        if (!InBounds(cell)) return false;
+        var c = crops[cell.x, cell.y];
+        if (!c) return false;
+        crops[cell.x, cell.y] = null;
+        Destroy(c.gameObject);
+        return true;
     }
 
 #if UNITY_EDITOR

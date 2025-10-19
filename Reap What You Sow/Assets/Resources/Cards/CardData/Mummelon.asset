@@ -12,7 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ac57a7c3cc5ede48ae60ed997994237, type: 3}
   m_Name: Mummelon
   m_EditorClassIdentifier: 
-  cardTreat: 
-  cardTrick: 
-  cardCandy: 0
-  neighborCandy: 0
+  id: 
+  displayName: 
+  baseEnergy: 2
+  baseLifetime: 3
+  baseTreatCandy: 2
+  baseTrickCandy: 2
+  hasUpgrade: 1
+  upgradedEnergy: 2
+  upgradedLifetime: 3
+  upgradedTreatCandy: 2
+  upgradedTrickCandy: 2
+  baseTreatAdjPerNeighbor: 0
+  baseTrickAdjPerNeighbor: 0
+  upgradedTreatAdjPerNeighbor: 0
+  upgradedTrickAdjPerNeighbor: 0
+  treatFlipNeighbors: 0
+  trickFlipNeighbors: 0
+  treatAuraToNeighbors: 1
+  trickAuraToNeighbors: -1
+  isSpell: 0
+  spellKind: 0
+  spellAmount: 0
+  cropSprite: {fileID: 6842264263087285709, guid: d89549138ad86b94b92460ec0d1ae035, type: 3}
+  cardSprite: {fileID: -1204545671547061452, guid: d89549138ad86b94b92460ec0d1ae035, type: 3}

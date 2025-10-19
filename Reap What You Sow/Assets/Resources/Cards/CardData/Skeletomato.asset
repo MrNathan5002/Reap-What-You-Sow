@@ -12,7 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ac57a7c3cc5ede48ae60ed997994237, type: 3}
   m_Name: Skeletomato
   m_EditorClassIdentifier: 
-  cardTreat: 
-  cardTrick: 
-  cardCandy: 0
-  neighborCandy: 0
+  id: 
+  displayName: 
+  baseEnergy: 0
+  baseLifetime: 1
+  baseTreatCandy: 3
+  baseTrickCandy: 3
+  hasUpgrade: 1
+  upgradedEnergy: 0
+  upgradedLifetime: 1
+  upgradedTreatCandy: 3
+  upgradedTrickCandy: 3
+  baseTreatAdjPerNeighbor: 0
+  baseTrickAdjPerNeighbor: 0
+  upgradedTreatAdjPerNeighbor: 0
+  upgradedTrickAdjPerNeighbor: 0
+  treatFlipNeighbors: 0
+  trickFlipNeighbors: 0
+  treatAuraToNeighbors: 0
+  trickAuraToNeighbors: 0
+  isSpell: 0
+  spellKind: 0
+  spellAmount: 0
+  cropSprite: {fileID: -2671427638984954724, guid: 7fa3a43117e929d46899c632d7fcfa3d, type: 3}
+  cardSprite: {fileID: 117289351291382522, guid: 7fa3a43117e929d46899c632d7fcfa3d, type: 3}

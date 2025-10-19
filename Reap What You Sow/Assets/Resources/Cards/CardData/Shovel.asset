@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ac57a7c3cc5ede48ae60ed997994237, type: 3}
+  m_Name: Shovel
+  m_EditorClassIdentifier: 
+  id: 
+  displayName: 
+  baseEnergy: 1
+  baseLifetime: 0
+  baseTreatCandy: 0
+  baseTrickCandy: 0
+  hasUpgrade: 0
+  upgradedEnergy: 1
+  upgradedLifetime: 0
+  upgradedTreatCandy: 0
+  upgradedTrickCandy: 0
+  baseTreatAdjPerNeighbor: 0
+  baseTrickAdjPerNeighbor: 0
+  upgradedTreatAdjPerNeighbor: 0
+  upgradedTrickAdjPerNeighbor: 0
+  treatFlipNeighbors: 0
+  trickFlipNeighbors: 0
+  treatAuraToNeighbors: 0
+  trickAuraToNeighbors: 0
+  isSpell: 1
+  spellKind: 1
+  spellAmount: 0
+  cropSprite: {fileID: 0}
+  cardSprite: {fileID: 2895907831442849334, guid: 376077eb4f9f2ce48ad9ee5b34d7dd2c, type: 3}
