@@ -258,6 +258,14 @@ public class DeckManager : MonoBehaviour
         return false;
     }
 
+    public void GainEnergy(int amount)
+    {
+        if (amount == 0) return;
+        // allow going ABOVE EnergyMax; only clamp the floor at 0
+        Energy = Mathf.Max(0, Energy + amount);
+        OnEnergyChanged?.Invoke(Energy, EnergyMax);
+    }
+
     public bool DiscardInstanceFromHand(int instanceId)
     {
         int i = handLogic.FindIndex(ci => ci.instanceId == instanceId);

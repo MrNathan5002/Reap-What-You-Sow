@@ -51,10 +51,53 @@ public class CardPlayable : MonoBehaviour, IPointerUpHandler
         var world = cam.ScreenToWorldPoint(new Vector3(sp.x, sp.y, z));
         var cell = grid.WorldToGrid(world);
 
+        // --- SPELLS ---
+        if (def.isSpell)
+        {
+            if (!deck.CanAfford(cost)) return; // cost still comes from base/upgraded energy
+
+            bool consumed = false;
+
+            switch (def.spellKind)
+            {
+                case CardEditor.SpellKind.RemoveTargetCrop:
+                    {
+                        // remove crop under the cursor if present
+                        if (board.RemoveCropAt(cell))
+                        {
+                            deck.SpendEnergy(cost);
+                            consumed = true;
+                        }
+                        break;
+                    }
+
+                case CardEditor.SpellKind.GainEnergy:
+                    {
+                        deck.SpendEnergy(cost);
+                        deck.GainEnergy(def.spellAmount); // e.g., +1
+                        consumed = true;
+                        break;
+                    }
+
+                default:
+                    // unknown spell kind: do nothing
+                    break;
+            }
+
+            if (consumed)
+            {
+                // Discard this specific instance and remove the visual
+                deck.DiscardInstanceFromHand(hc.instance.instanceId);
+                hand.RemoveCardGO(gameObject);
+            }
+            return; // spells don't place crops
+        }
+
+        // --- CROPS (existing behavior) ---
         if (!board.CanPlace(cell)) return;
         if (!deck.CanAfford(cost)) return;
 
-        // Place crop with both treat & trick yields baked in
+        // Place crop using card def (Board will use def.cropSprite)
         bool placed = board.PlaceCropFromDef(cell, def, upgraded, lifetime, /*sprite:*/ null);
         if (!placed) return;
 

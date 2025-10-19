@@ -29,6 +29,24 @@ public class CardEditor : ScriptableObject
     public int upgradedTreatAdjPerNeighbor = 0;
     public int upgradedTrickAdjPerNeighbor = 0;
 
+    [Header("Neighbor Effects (per round mode)")]
+    public bool treatFlipNeighbors = false;   // if true, neighbors invert Treat<->Trick this round
+    public bool trickFlipNeighbors = false;
+
+    public int treatAuraToNeighbors = 0;      // add to neighbors' yield (this round)
+    public int trickAuraToNeighbors = 0;
+
+    // --- Spells (optional) ---
+    [Header("Spell (optional)")]
+    public bool isSpell = false;
+
+    public enum SpellKind { None, RemoveTargetCrop, GainEnergy }
+    public SpellKind spellKind = SpellKind.None;
+
+    // Used by GainEnergy (e.g., +1). Ignored for RemoveTargetCrop.
+    public int spellAmount = 0;
+
+
     public Sprite cropSprite;
     public Sprite cardSprite;
 }

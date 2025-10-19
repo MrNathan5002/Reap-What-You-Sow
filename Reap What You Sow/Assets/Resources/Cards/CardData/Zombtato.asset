@@ -17,11 +17,18 @@ MonoBehaviour:
   baseEnergy: 1
   baseLifetime: 3
   baseTreatCandy: 2
-  baseTrickCandy: 0
+  baseTrickCandy: 2
   hasUpgrade: 0
   upgradedEnergy: 1
   upgradedLifetime: 3
-  upgradedTreatCandy: 3
-  upgradedTrickCandy: 1
+  upgradedTreatCandy: 2
+  upgradedTrickCandy: 2
+  baseTreatAdjPerNeighbor: 0
+  baseTrickAdjPerNeighbor: 0
+  upgradedTreatAdjPerNeighbor: 0
+  upgradedTrickAdjPerNeighbor: 0
+  isSpell: 0
+  spellKind: 0
+  spellAmount: 0
   cropSprite: {fileID: -2320095610103265720, guid: 34ff0ac224b977c4e880768cafacafab, type: 3}
   cardSprite: {fileID: -1310753141056627244, guid: 34ff0ac224b977c4e880768cafacafab, type: 3}

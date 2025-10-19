@@ -91,38 +91,76 @@ public class BoardManager : MonoBehaviour
             dirs.Add(new Vector2Int(-1, 1));
         }
 
-        for (int y = 0; y < grid.Height; y++)
-            for (int x = 0; x < grid.Width; x++)
-            {
-                // inside the double loop over x,y:
-                var c = crops[x, y];
-                if (!c) continue;
+        int W = grid.Width, H = grid.Height;
 
+        // --- Pass 1: neighbor effects landing on each cell ---
+        bool[,] flip = new bool[W, H];   // if true, that cell flips Treat<->Trick for this round
+        int[,] aura = new int[W, H];    // additive yield from neighbors
+
+        for (int y = 0; y < H; y++)
+            for (int x = 0; x < W; x++)
+            {
+                var src = crops[x, y];
+                if (!src || !src.def) continue;
+
+                // Provider uses the GLOBAL round to decide which neighbor effect it emits
+                bool srcIsTrick = isTrickRound;
+
+                bool doFlip = srcIsTrick ? src.def.trickFlipNeighbors : src.def.treatFlipNeighbors;
+                int addAura = srcIsTrick ? src.def.trickAuraToNeighbors : src.def.treatAuraToNeighbors;
+
+                if (!doFlip && addAura == 0) continue;
+
+                foreach (var d in dirs)
+                {
+                    var n = new Vector2Int(x, y) + d;
+                    if (!InBounds(n)) continue;
+                    if (crops[n.x, n.y] == null) continue;
+
+                    if (doFlip) flip[n.x, n.y] = true;      // any source can set flip
+                    if (addAura != 0) aura[n.x, n.y] += addAura;
+                }
+            }
+
+        // --- Pass 2: compute local yields with possible flip + adjacency + aura ---
+        for (int y = 0; y < H; y++)
+            for (int x = 0; x < W; x++)
+            {
+                var c = crops[x, y];
+                if (!c || !c.def) continue;
+
+                // Local mode: global round XOR flip-on-this-cell
+                bool localIsTrick = isTrickRound ^ flip[x, y];
+
+                // Base & adjacency per neighbor (you already store both)
                 int baseTreat = c.isUpgraded ? c.def.upgradedTreatCandy : c.def.baseTreatCandy;
                 int baseTrick = c.isUpgraded ? c.def.upgradedTrickCandy : c.def.baseTrickCandy;
 
                 int adjTreat = c.isUpgraded ? c.def.upgradedTreatAdjPerNeighbor : c.def.baseTreatAdjPerNeighbor;
                 int adjTrick = c.isUpgraded ? c.def.upgradedTrickAdjPerNeighbor : c.def.baseTrickAdjPerNeighbor;
 
-                // count neighbors (diagonals included if flag set)
+                // neighbors (diagonals included if set)
                 int neighbors = CountNeighbors(new Vector2Int(x, y), dirs);
 
-                // choose round mode and apply adjacency
-                int roundYield = isTrickRound ? (baseTrick + neighbors * adjTrick)
-                                              : (baseTreat + neighbors * adjTreat);
+                int baseYield = localIsTrick ? baseTrick : baseTreat;
+                int adjPer = localIsTrick ? adjTrick : adjTreat;
 
-                // clamp to non-negative (prevents weird negative totals)
-                roundYield = Mathf.Max(0, roundYield);
+                int roundYield = baseYield + neighbors * adjPer;
+
+                // add aura from neighbors landing on this cell
+                roundYield += aura[x, y];
+
+                // clamp to non-negative
+                if (roundYield < 0) roundYield = 0;
 
                 gained += roundYield;
 
-                // tick lifetime + collect for removal
+                // lifetime tick
                 c.lifetime -= 1;
                 if (c.lifetime <= 0) toRemove.Add(c);
-
             }
 
-        // Remove expired crops
+        // cleanup expired
         foreach (var dead in toRemove)
         {
             crops[dead.cell.x, dead.cell.y] = null;
@@ -131,6 +169,7 @@ public class BoardManager : MonoBehaviour
 
         return Mathf.Max(0, gained);
     }
+
 
     int CountNeighbors(Vector2Int cell, List<Vector2Int> dirs)
     {
@@ -155,6 +194,24 @@ public class BoardManager : MonoBehaviour
                     crops[x, y] = null;
                 }
             }
+    }
+
+    public bool HasCropAt(Vector2Int cell)
+    {
+        EnsureStorage();
+        if (!InBounds(cell)) return false;
+        return crops[cell.x, cell.y] != null;
+    }
+
+    public bool RemoveCropAt(Vector2Int cell)
+    {
+        EnsureStorage();
+        if (!InBounds(cell)) return false;
+        var c = crops[cell.x, cell.y];
+        if (!c) return false;
+        crops[cell.x, cell.y] = null;
+        Destroy(c.gameObject);
+        return true;
     }
 
 #if UNITY_EDITOR

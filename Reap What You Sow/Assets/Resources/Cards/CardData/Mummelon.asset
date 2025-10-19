@@ -14,14 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 
   displayName: 
-  baseEnergy: 1
+  baseEnergy: 2
   baseLifetime: 3
   baseTreatCandy: 2
-  baseTrickCandy: 0
+  baseTrickCandy: 2
   hasUpgrade: 0
-  upgradedEnergy: 1
+  upgradedEnergy: 2
   upgradedLifetime: 3
-  upgradedTreatCandy: 3
-  upgradedTrickCandy: 1
+  upgradedTreatCandy: 2
+  upgradedTrickCandy: 2
+  baseTreatAdjPerNeighbor: 0
+  baseTrickAdjPerNeighbor: 0
+  upgradedTreatAdjPerNeighbor: 0
+  upgradedTrickAdjPerNeighbor: 0
+  isSpell: 0
+  spellKind: 0
+  spellAmount: 0
   cropSprite: {fileID: 6842264263087285709, guid: d89549138ad86b94b92460ec0d1ae035, type: 3}
   cardSprite: {fileID: -1204545671547061452, guid: d89549138ad86b94b92460ec0d1ae035, type: 3}

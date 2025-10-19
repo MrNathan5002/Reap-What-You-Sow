@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ac57a7c3cc5ede48ae60ed997994237, type: 3}
+  m_Name: Fertilizer
+  m_EditorClassIdentifier: 
+  id: 
+  displayName: 
+  baseEnergy: 0
+  baseLifetime: 0
+  baseTreatCandy: 0
+  baseTrickCandy: 0
+  hasUpgrade: 0
+  upgradedEnergy: 0
+  upgradedLifetime: 0
+  upgradedTreatCandy: 0
+  upgradedTrickCandy: 1
+  baseTreatAdjPerNeighbor: 0
+  baseTrickAdjPerNeighbor: 0
+  upgradedTreatAdjPerNeighbor: 0
+  upgradedTrickAdjPerNeighbor: 0
+  isSpell: 1
+  spellKind: 2
+  spellAmount: 1
+  cropSprite: {fileID: 0}
+  cardSprite: {fileID: 0}

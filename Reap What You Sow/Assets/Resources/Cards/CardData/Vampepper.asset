@@ -15,13 +15,20 @@ MonoBehaviour:
   id: 
   displayName: 
   baseEnergy: 1
-  baseLifetime: 3
+  baseLifetime: 2
   baseTreatCandy: 2
-  baseTrickCandy: 0
+  baseTrickCandy: 5
   hasUpgrade: 0
   upgradedEnergy: 1
-  upgradedLifetime: 3
-  upgradedTreatCandy: 3
-  upgradedTrickCandy: 1
+  upgradedLifetime: 2
+  upgradedTreatCandy: 2
+  upgradedTrickCandy: 5
+  baseTreatAdjPerNeighbor: 0
+  baseTrickAdjPerNeighbor: 0
+  upgradedTreatAdjPerNeighbor: 0
+  upgradedTrickAdjPerNeighbor: 0
+  isSpell: 0
+  spellKind: 0
+  spellAmount: 0
   cropSprite: {fileID: 2045391355831636367, guid: 26b1fc54bfba728439a48a5de820e0b7, type: 3}
   cardSprite: {fileID: -7718925641042797649, guid: 26b1fc54bfba728439a48a5de820e0b7, type: 3}
