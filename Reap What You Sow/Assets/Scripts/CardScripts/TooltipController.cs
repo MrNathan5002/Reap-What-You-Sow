@@ -7,15 +7,21 @@ public class TooltipController : MonoBehaviour
     public static TooltipController I;
 
     [Header("Refs")]
-    public Canvas canvas;                // this canvas
-    public RectTransform panel;          // background panel
-    public TextMeshProUGUI text;         // content text
+    public Canvas canvas;                 // your tooltip canvas (Screen Space - Camera recommended)
+    public RectTransform panel;           // the tooltip panel
+    public TextMeshProUGUI text;
 
     [Header("Tuning")]
-    public Vector2 screenOffset = new(8f, -8f); // px in reference res
+    public Vector2 screenOffset = new(16f, -16f); // px away from cursor
     public bool pixelSnap = true;
+    public bool autoFollowWhileVisible = true;    // follow mouse every frame (helps on WebGL)
+
+    [Header("Optional")]
+    public CanvasGroup cg;                // leave null if you didn’t add one
 
     Camera uiCam;
+    RectTransform canvasRT;
+    CanvasScaler scaler;
     Vector2 refRes;
 
     void Awake()
@@ -25,45 +31,82 @@ public class TooltipController : MonoBehaviour
 
         if (!canvas) canvas = GetComponentInChildren<Canvas>(true);
         uiCam = canvas ? canvas.worldCamera : Camera.main;
-
-        // Try to read reference resolution from CanvasScaler (if present)
-        var scaler = canvas ? canvas.GetComponent<CanvasScaler>() : null;
+        canvasRT = canvas ? canvas.transform as RectTransform : null;
+        scaler = canvas ? canvas.GetComponent<CanvasScaler>() : null;
         refRes = scaler ? scaler.referenceResolution : new Vector2(320, 180);
+
+        if (!cg) cg = GetComponent<CanvasGroup>();
+        if (cg) { cg.alpha = 0f; cg.interactable = false; cg.blocksRaycasts = false; }
 
         Hide();
     }
 
+    void Update()
+    {
+        if (!autoFollowWhileVisible) return;
+        if (!panel || !panel.gameObject.activeSelf) return;
+        SetPositionFromScreen(Input.mousePosition);
+    }
+
     public void Show(CardEditor def, bool upgraded, Vector2 screenPos)
     {
-        if (!def || !panel || !text) return;
+        if (!def || !panel || !text || canvasRT == null) return;
+
         panel.gameObject.SetActive(true);
+        if (cg) { cg.alpha = 1f; cg.interactable = false; cg.blocksRaycasts = false; }
 
         text.text = BuildText(def, upgraded);
+        SetPositionFromScreen(screenPos);
+    }
 
-        // position near cursor (clamp inside screen)
-        Vector2 pos = screenPos + screenOffset;
-        pos = ClampToScreen(pos, panel.sizeDelta);
-        if (pixelSnap) pos = new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
-
-        panel.anchoredPosition = ScreenToCanvas(pos);
+    public void Follow(Vector2 screenPos)  // still used by your trigger; now robust
+    {
+        if (!panel || !panel.gameObject.activeSelf) return;
+        SetPositionFromScreen(screenPos);
     }
 
     public void Hide()
     {
+        if (cg) { cg.alpha = 0f; cg.interactable = false; cg.blocksRaycasts = false; }
         if (panel) panel.gameObject.SetActive(false);
     }
 
-    // Call each frame while visible if you want true follow; or only on enter/move.
-    public void Follow(Vector2 screenPos)
+    // --- Positioning that actually respects real canvas size & pivot ---
+    void SetPositionFromScreen(Vector2 screenPos)
     {
-        if (!panel || !panel.gameObject.activeSelf) return;
-        Vector2 pos = screenPos + screenOffset;
-        pos = ClampToScreen(pos, panel.sizeDelta);
-        if (pixelSnap) pos = new Vector2(Mathf.Round(pos.x), Mathf.Round(pos.y));
-        panel.anchoredPosition = ScreenToCanvas(pos);
+        if (canvasRT == null) return;
+
+        // 1) Convert cursor to local canvas space
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRT, screenPos, uiCam, out var local);
+
+        // 2) Convert offset from reference px → local canvas units
+        Vector2 canvasSize = canvasRT.rect.size;                 // real size (px in canvas space)
+        Vector2 scale = new Vector2(canvasSize.x / refRes.x, canvasSize.y / refRes.y);
+        Vector2 localOffset = new Vector2(screenOffset.x * scale.x, screenOffset.y * scale.y);
+
+        Vector2 desired = local + localOffset;
+
+        // 3) Clamp inside canvas, considering panel size & pivot
+        Vector2 pSize = panel.sizeDelta;                         // in canvas units
+        Vector2 halfCanvas = canvasSize * 0.5f;
+        float minX = -halfCanvas.x + pSize.x * panel.pivot.x;
+        float maxX = halfCanvas.x - pSize.x * (1f - panel.pivot.x);
+        float minY = -halfCanvas.y + pSize.y * panel.pivot.y;
+        float maxY = halfCanvas.y - pSize.y * (1f - panel.pivot.y);
+
+        desired.x = Mathf.Clamp(desired.x, minX, maxX);
+        desired.y = Mathf.Clamp(desired.y, minY, maxY);
+
+        if (pixelSnap)
+        {
+            desired.x = Mathf.Round(desired.x);
+            desired.y = Mathf.Round(desired.y);
+        }
+
+        panel.anchoredPosition = desired;
     }
 
-    string BuildText(CardEditor def, bool upgraded)
+string BuildText(CardEditor def, bool upgraded)
     {
         string name = string.IsNullOrEmpty(def.displayName) ? def.name : def.displayName;
 
