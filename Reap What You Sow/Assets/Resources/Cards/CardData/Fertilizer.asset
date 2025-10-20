@@ -34,5 +34,9 @@ MonoBehaviour:
   isSpell: 1
   spellKind: 2
   spellAmount: 1
+  treatTextOverride: 
+  trickTextOverride: 
+  hideTreatLine: 0
+  hideTrickLine: 0
   cropSprite: {fileID: 0}
-  cardSprite: {fileID: 2895907831442849334, guid: 376077eb4f9f2ce48ad9ee5b34d7dd2c, type: 3}
+  cardSprite: {fileID: -8419849035894973995, guid: 1e24d9e925951f74296452297dd0fa99, type: 3}

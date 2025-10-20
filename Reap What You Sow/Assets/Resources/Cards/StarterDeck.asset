@@ -27,5 +27,5 @@ MonoBehaviour:
     startUpgraded: 0
   startHandSize: 5
   startEnergyMax: 3
-  roundsPerNight: 5
+  roundsPerNight: 4
   quotaCandy: 40

@@ -65,6 +65,7 @@ GameObject:
   - component: {fileID: 5617326238518490265}
   - component: {fileID: 5736201496200341203}
   - component: {fileID: -5802414618866890772}
+  - component: {fileID: -3323231196063781662}
   m_Layer: 0
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -105,7 +106,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardData: {fileID: 0}
-  cardImage: {fileID: 0}
 --- !u!212 &-4893612797973282472
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -252,3 +252,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01ada7c321341174698f7b71c51c9037, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-3323231196063781662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6510743600002016390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbe01a40affed614ab2c17236346394f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDraggingGuard: 1

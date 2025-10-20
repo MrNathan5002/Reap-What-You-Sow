@@ -34,6 +34,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
     private int originalSiblingIndex = -1;    // UI ordering
     private int originalSortingOrder = 0;     // SpriteRenderer ordering
     private SpriteRenderer sr;                // cached if present
+    public bool IsDragging => currentState == 2;
 
     void Awake()
     {
@@ -83,6 +84,7 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
     private void TransitionToState0()
     {
         currentState = 0;
+        TooltipController.I?.Hide();
         transform.localScale = originalScale;
         transform.localRotation = originalRotation;
         transform.localPosition = originalLocalPos;
@@ -118,18 +120,20 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         if (currentState != 1) return;
 
         currentState = 2;
+        TooltipController.I?.Hide();          // <— add this line
 
         // keep elevated; disable hover-only visuals; show arc
         Elevate(true);
         if (glowEffect) glowEffect.SetActive(false);
         arc?.Show(true);
 
-        // cache (no movement now, but harmless to keep)
+        // cache...
         Vector3 sp = eventData.position;
         sp.z = Mathf.Abs(transform.position.z - cam.transform.position.z);
         originalWorldPointer = cam.ScreenToWorldPoint(sp);
         originalWorldPos = transform.position;
     }
+
 
     public void OnPointerUp(PointerEventData eventData)   // ← NEW: explicit end
     {
@@ -165,6 +169,8 @@ public class CardMovement : MonoBehaviour, IDragHandler, IPointerDownHandler, IP
         arc?.Show(true);
         // No position changes here: card stays where hover placed it.
     }
+
+
 
     // ---------------- Elevation helper ----------------
     private void Elevate(bool on)

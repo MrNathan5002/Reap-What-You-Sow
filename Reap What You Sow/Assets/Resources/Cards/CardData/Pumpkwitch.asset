@@ -18,7 +18,7 @@ MonoBehaviour:
   baseLifetime: 2
   baseTreatCandy: 0
   baseTrickCandy: 0
-  hasUpgrade: 1
+  hasUpgrade: 0
   upgradedEnergy: 2
   upgradedLifetime: 2
   upgradedTreatCandy: 0
@@ -34,5 +34,9 @@ MonoBehaviour:
   isSpell: 0
   spellKind: 0
   spellAmount: 0
+  treatTextOverride: 
+  trickTextOverride: 
+  hideTreatLine: 0
+  hideTrickLine: 0
   cropSprite: {fileID: 7678946036126639133, guid: 6b00b4c3678a8d546855fb9fedbc0328, type: 3}
   cardSprite: {fileID: -5050702283373310293, guid: 6b00b4c3678a8d546855fb9fedbc0328, type: 3}

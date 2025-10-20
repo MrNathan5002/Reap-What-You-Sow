@@ -46,6 +46,11 @@ public class CardEditor : ScriptableObject
     // Used by GainEnergy (e.g., +1). Ignored for RemoveTargetCrop.
     public int spellAmount = 0;
 
+    [Header("Tooltip Overrides (optional)")]
+    [TextArea(1, 3)] public string treatTextOverride;   // e.g., "—" or "No effect"
+    [TextArea(1, 3)] public string trickTextOverride;   // e.g., "+3 candy"
+    public bool hideTreatLine = false;                   // skip Treat line entirely
+    public bool hideTrickLine = false;                   // skip Trick line entirely
 
     public Sprite cropSprite;
     public Sprite cardSprite;
