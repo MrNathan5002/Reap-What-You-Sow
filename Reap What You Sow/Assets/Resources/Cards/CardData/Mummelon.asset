@@ -29,7 +29,7 @@ MonoBehaviour:
   upgradedTrickAdjPerNeighbor: 0
   treatFlipNeighbors: 0
   trickFlipNeighbors: 0
-  treatAuraToNeighbors: 1
+  treatAuraToNeighbors: 2
   trickAuraToNeighbors: -1
   isSpell: 0
   spellKind: 0
